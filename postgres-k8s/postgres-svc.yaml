@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: posgresql-svc
+  namespace: postgres
+  labels:
+    app: posgresql
+spec:
+  ports:
+  - port: 8080
+    name: posgresql
+  clusterIP: None
+  selector:
+    app: posgresql

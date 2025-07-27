@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cicd
+  namespace: postgres
+  labels:
+    k8s-app: fluentd-logging
+spec:
+  selector:
+    matchLabels:
+      name: cicd
+  template:
+    metadata:
+      labels:
+        name: cicd
+    spec:
+      containers:
+      - name: cicd
+        image: cezeike39/docker:cicd
