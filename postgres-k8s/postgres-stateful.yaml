@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: posgresql
   serviceName: posgresql
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
@@ -26,9 +26,9 @@ spec:
               name: postgres-secret
               key: POSTGRES_PASSWORD
         volumeMounts:
-        - name: postgres-storage
+        - name: pv-volume  
           mountPath: /var/lib/postgresql/data
       volumes:
-      - name: postgres-storage
+      - name: pv-volume
         persistentVolumeClaim:
-          claimName: postgres-pvc
+          claimName: pv-claim
