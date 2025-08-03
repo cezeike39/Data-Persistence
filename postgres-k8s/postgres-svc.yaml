@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: posgresql-svc
+  namespace: postgres
+  labels:
+    app: posgresql
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: posgresql
+  clusterIP: None
+  selector:
+    app: posgresql

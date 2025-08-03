@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: jobs
+  namespace: postgres
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        job: aws-s3-backup
+    spec:
+      completions: 1
+      parallelism: 1
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: aws-cli
+            image: bitnami/aws-cli:2
+            env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: aws_access_key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: secret_access_key
+            command:
+            - /bin/sh
+            - -c
+            - |
+              cd /data || exit 1
+              tar -czf backup-$(date +%F-%H-%M).tar.gz . || exit 2
+              aws s3 cp backup-*.tar.gz s3://chisomp-bucket/ || exit 3
+            volumeMounts:
+            - name: pv-volume
+              mountPath: /data
+          volumes:
+          - name: pv-volume
+            persistentVolumeClaim:
+              claimName: pv-claim
